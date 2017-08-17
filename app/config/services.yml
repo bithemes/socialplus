@@ -1,0 +1,20 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    note_service:
+        class: AppBundle\Service\NoteService
+        #arguments: ['@doctrine.orm.entity_manager']
+
+    website_service:
+        class: AppBundle\Service\WebsiteService
+        arguments: ['@doctrine.orm.entity_manager', '%website%']
+        tags:
+          - { name: kernel.event_listener, event: kernel.controller, method: onKernelRequest }
+
+    locale_service:
+        class: AppBundle\Service\LocaleService
+        #arguments: ['@security.token_storage', '@translator']
+        tags:
+          - { name: kernel.event_listener, event: kernel.controller, method: onKernelRequest, priority: 7 }

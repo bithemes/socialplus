@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}Dashboard{% endtrans %}{% endblock %}
+
+{% block menu %}
+    {% include(':dashboard/parts:menu.html.twig') %}
+{% endblock %}
+
+{% block body %}
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="thumbnail panel-editable">
+                        <a href="{{ vich_uploader_asset(user, 'backgroundFile') }}" class="user-bg">
+                            {% if user.backgroundName %}
+                                <img src="{{ vich_uploader_asset(user, 'backgroundFile') }}" alt="{{ user.backgroundName }}">
+                            {% else %}
+                                <img src="{{ asset('img/bg.jpg') }}" alt="bg">
+                            {% endif %}
+                        </a>
+                        <div class="caption text-center">
+                            <a href="{{ vich_uploader_asset(user, 'avatarFile') }}" class="user-avatar">
+                                {% if user.avatarName %}
+                                    <img src="{{ vich_uploader_asset(user, 'avatarFile') }}" alt="{{ user.avatarName }}">
+                                {% else %}
+                                    <img src="{{ asset('img/avatar.jpg') }}" alt="user avatar">
+                                {% endif %}
+                            </a>
+                            <h4 class="caption-name">{{ user.name }} {{ user.surname }}</h4>
+                            <i class="text-center">@{{ user.username }}</i>
+                            <div class="user-description">
+                                <p contenteditable="true" spellcheck="false">{{ user.description }}</p>
+                                <span class="label label-success description-characters"><b>0/80</b> characters</span>
+                                <button class="btn btn-success btn-description" contenteditable="false">Save</button>
+                            </div>
+                            <br>
+                            <ul>
+                                <li>
+                                    <p>{% trans %}Followers{% endtrans %}</p>
+                                    <b>{{ user.followers|length }}</b>
+                                </li>
+                                <li>
+                                    <p>{% trans %}Total Posts{% endtrans %}</p>
+                                    <b>{{ total_posts }}</b>
+                                </li>
+                            </ul>
+                            <br>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default panel-editable">
+                        <a class="panel-edit" href="{{ path('personal_settings') }}"><span class="glyphicon glyphicon-edit"></span></a>
+                        <h4 class="caption-name">{% trans %}About{% endtrans %}</h4>
+                        <ul>
+                            {% if(user.profession) %}<li><b>{{ user.profession }}</b></li>{% endif %}
+                            {% if(user.workplace) %}<li><span class="glyphicon glyphicon glyphicon-tag"></span> {% trans %}Works at{% endtrans %} <b>{{ user.workplace }}</b></li>{% endif %}
+                            {% if(user.location) %}<li><span class="glyphicon glyphicon-map-marker"></span> {% trans %}Lives in{% endtrans %} <b>{{ user.location }}</b></li>{% endif %}
+                            {% if(user.website) %}<li><span class="glyphicon glyphicon-globe"></span> {% trans %}Homepage{% endtrans %} <a href="{{ user.website }}">{{ user.website|replace({'http://' : ''}) }}</a></li>{% endif %}
+                            {% if(user.school) %}<li><span class="glyphicon glyphicon-education"></span> {% trans %}Studied at{% endtrans %} <b>{{ user.school }}</b></li>{% endif %}
+                            <li><span class="glyphicon glyphicon-flag"></span> {% trans %}Joined at{% endtrans %} <b>{{ user.joined|date('d F Y') }}</b></li>
+                            {% if(user.birthday|date('d-m') == 'now'|date('d-m') ) %}<li><span class="glyphicon glyphicon-gift"></span> <b>{% trans %}Have birthday today!{% endtrans %}</b></li>{% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="panel panel-default posts">
+                        <ul>
+                            <li class="new-post">
+                                {{ form_start(postForm) }}
+                                    {{ form_widget(postForm) }}
+                                {{ form_end(postForm) }}
+                            </li>
+                            {% include(':dashboard/parts:dashboard_posts.html.twig') %}
+                        </ul>
+                        {% if total_posts > posts|length %}
+                            <a class="btn btn-post show-dashboard-posts" style="background: {{ website.mainColor }}" href="javascript:void(0)">Show next {{ website.postsPerPage }} posts</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-3 last-column">
+                    {% for note in user.notes|reverse|slice(0,3) %}
+                        <div class="alert alert-{{ note.type }} alert-dismissible" role="alert">
+                            <button type="button" class="close each-note" data-dismiss="alert" data-id="{{ note.id }}"><span>&times;</span></button>
+                            {{ note.message }}
+                        </div>
+                    {% endfor %}
+                    <div class="panel panel-default panel-likes">
+                        <h4 class="caption-name">{% trans %}Followed by{% endtrans %} {{ user.name }} {{ user.surname }}</h4>
+                        <ul>
+                            {% for follow in user.follows|slice(0,3) %}
+                                <li>
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="#" class="post-avatar">
+                                                {% if follow.targetUser.avatarName %}
+                                                    <img src="{{ vich_uploader_asset(follow.targetUser, 'avatarFile') }}" alt="{{ follow.targetUser.avatarName }}">
+                                                {% else %}
+                                                    <img src="{{ asset('img/avatar.jpg') }}" alt="follow avatar">
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <a class="follow-link" href="{{ path('user_page', { 'username': follow.targetUser.username }) }}"><strong>{{ follow.targetUser.name }} {{ follow.targetUser.surname }}</strong></a>
+                                            <a href="{{ path('unfollow', { 'username': follow.targetUser.username }) }}" class="btn btn-follow"><span class="glyphicon glyphicon glyphicon-check"></span> {% trans %}Unfollow{% endtrans %}</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% include(':dashboard/parts:copyright.html.twig') %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block styles %}
+    <style type="text/css">
+        .btn-follow, .panel-likes .btn-follow {
+            border-color: {{ website.mainColor }};
+            color: {{ website.mainColor }}
+        }
+        .btn-follow .glyphicon {
+            color: {{ website.mainColor }};
+        }
+        .btn-follow:hover {
+            background: {{ website.mainColor }};
+            color: #fff;
+        }
+        .btn-post {
+            background: {{ website.mainColor }}
+        }
+    </style>
+{% endblock %}

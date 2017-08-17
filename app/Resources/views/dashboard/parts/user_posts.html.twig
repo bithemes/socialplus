@@ -1,0 +1,168 @@
+{% for post in posts|reverse %}
+    <li class="dashboard-post user-post">
+        <div class="post-content">
+            <a class="panel-remove" href="{{ path('post_delete', { 'id' : post.id }) }}"><span class="glyphicon glyphicon-remove"></span></a>
+            <a class="panel-edit" href="{{ path('post_edit', { 'id' : post.id }) }}"><span class="glyphicon glyphicon-edit"></span></a>
+            <div class="media">
+                <div class="media-left">
+                    <a href="#" class="post-avatar">
+                        {% if post.user.avatarName %}
+                            <img src="{{ vich_uploader_asset(post.user, 'avatarFile') }}" alt="{{ post.user.avatarName }}">
+                        {% else %}
+                            <img src="{{ asset('img/avatar.jpg') }}" alt="user avatar">
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="media-body">
+                    <h4 class="caption-name">{{ post.user.name }} {{ post.user.surname }}</h4>
+                    <p class="post-date">{{ post.uploadedAt|ago }} {% if post.editedAt %}· edited {{ post.editedAt|ago }}{% endif %}</p>
+                </div>
+            </div>
+            <div class="post-inner">
+                <p>{{ post.content|nl2br }}</p>
+                {% if post.imageName %}
+                    <a href="{{ vich_uploader_asset(post, 'imageFile') }}" class="post-img">
+                        <img src="{{ vich_uploader_asset(post, 'imageFile') }}" alt="{{ post.imageName }}">
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="post-info">
+            <div class="post-likes">
+                <div class="col-md-6 text-left">
+                    <p>
+                        <span class="glyphicon glyphicon-thumbs-up"></span> {{ post.likes|length }} {% trans %}Likes{% endtrans %}
+                        {% set post_liked = false %}
+                        {% set break = false %}
+
+                        {% for like in post.likes if not break %}
+                            {% if like.user == user %}
+                                · <a href="{{ path('post_dislike', { 'id': post.id }) }}">{% trans %}Dislike{% endtrans %}</a>
+                                {% set post_liked = true %}
+                                {% set break = true %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if post_liked == false %}
+                            · <a href="{{ path('post_like', { 'id': post.id }) }}">{% trans %}Like{% endtrans %}</a>
+                        {% endif %}
+                        · <a class="btn-report-post" data-id="{{ post.id }}" data-toggle="modal" data-target="#report-modal" href="#">Report</a>
+                    </p>
+                </div>
+                <div class="col-md-6 text-right">
+                    <p>
+                        <span class="glyphicon glyphicon-flag"></span> {{ post.comments|length }} {% trans %}Comments{% endtrans %}
+                        · <a class="comment-switch" data-id="{{ post.id }}" href="javascript:void(0)">{% trans %}Add comment{% endtrans %}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="comments-container">
+            <div class="post-add-comment" id="post-add-comment-{{ post.id }}">
+                <textarea name="comment" placeholder="{% trans %}Start typing...{% endtrans %}" spellcheck="false" class="new-comment-content commentExpand form-control"></textarea>
+                <a class="new-comment-send" href="javascript:void(0)" data-id="{{ post.id }}">{% trans %}Send Comment{% endtrans %}</a>
+                <hr>
+            </div>
+            {% if post.comments|length %}
+                <div class="post-comments" id="comments-{{ post.id }}">
+                    {% for comment in post.comments if not comment.parentComment %}
+                        <div class="each-comment">
+                            <div class="media">
+                                <div class="media-left">
+                                    <a href="#" class="comment-avatar">
+                                        {% if comment.user.avatarName %}
+                                            <img src="{{ vich_uploader_asset(comment.user, 'avatarFile') }}" alt="{{ comment.user.avatarName }}">
+                                        {% else %}
+                                            <img src="{{ asset('img/avatar.jpg') }}" alt="user avatar">
+                                        {% endif %}
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <div class="comment-inner">
+                                        <strong>{{ comment.user.name }} {{ comment.user.surname }}</strong>
+                                        <p>{{ comment.content|nl2br }}</p>
+                                    </div>
+                                    <p class="comment-info">
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        {{ comment.likes|length }} {% trans %}Likes{% endtrans %}
+                                        {% set comment_liked = false %}
+                                        {% set break = false %}
+
+                                        {% for like in comment.likes if not break %}
+                                            {% if like.user == user %}
+                                                · <a href="{{ path('comment_dislike', { 'id': comment.id }) }}">{% trans %}Dislike{% endtrans %}</a>
+                                                {% set comment_liked = true %}
+                                                {% set break = true %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if comment_liked == false %}
+                                            · <a href="{{ path('comment_like', { 'id': comment.id }) }}">{% trans %}Like{% endtrans %}</a>
+                                        {% endif %}
+                                        · {{ comment.commentedAt|ago }}
+                                        {% if comment.user == user or post.user == user %}
+                                            · <a href="{{ path('comment_delete', {'id': comment.id }) }}">{% trans %}Delete{% endtrans %}</a>
+                                        {% endif %}
+                                        · <a href="javascript:void(0);" class="comment-reply">{% trans %}Reply{% endtrans %}</a>
+                                    </p>
+                                </div>
+                            </div>
+                            {% for reply in comment.childComments %}
+                                <div class="reply-comment">
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="#" class="comment-avatar">
+                                                {% if reply.user.avatarName %}
+                                                    <img src="{{ vich_uploader_asset(reply.user, 'avatarFile') }}" alt="{{ reply.user.avatarName }}">
+                                                {% else %}
+                                                    <img src="{{ asset('img/avatar.jpg') }}" alt="user avatar">
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="comment-inner">
+                                                <strong>{{ reply.user.name }} {{ reply.user.surname }}</strong>
+                                                <p>{{ reply.content|nl2br }}</p>
+                                            </div>
+                                            <p class="comment-info">
+                                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                                                {{ reply.likes|length }} {% trans %}Likes{% endtrans %}
+                                                {% set reply_liked = false %}
+                                                {% set rbreak = false %}
+
+                                                {% for rlike in reply.likes if not rbreak %}
+                                                    {% if rlike.user == user %}
+                                                        · <a href="{{ path('comment_dislike', { 'id': reply.id }) }}">{% trans %}Dislike{% endtrans %}</a>
+                                                        {% set reply_liked = true %}
+                                                        {% set rbreak = true %}
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                                {% if reply_liked == false %}
+                                                    · <a href="{{ path('comment_like', { 'id': reply.id }) }}">{% trans %}Like{% endtrans %}</a>
+                                                {% endif %}
+                                                · {{ reply.commentedAt|ago }}
+                                                {% if reply.user == user or post.user == user %}
+                                                    · <a href="{{ path('comment_delete', {'id': reply.id }) }}">{% trans %}Delete{% endtrans %}</a>
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="post-reply-comment">
+                                <hr>
+                                <textarea name="comment" placeholder="{% trans %}Start typing...{% endtrans %}" spellcheck="false" class="new-comment-content replyExpand form-control"></textarea>
+                                <a class="reply-comment-send" href="javascript:void(0)" data-post="{{ post.id }}" data-parent="{{ comment.id }}">{% trans %}Send Reply{% endtrans %}</a>
+                                <hr>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% if post.comments|length > 2 %}
+                        <a class="btn btn-post btn-show-comments" href="javascript:void(0)" data-id="{{ post.id }}">{% trans %}Show all comments{% endtrans %}</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </li>
+{% endfor %}

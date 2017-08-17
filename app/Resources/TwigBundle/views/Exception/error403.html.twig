@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Error - Access Denied{% endblock %}
+
+{% block body %}
+    <main>
+        <div class="container text-center">
+            <h2>Access Denied - Error 403</h2>
+            <h3>You don't have permissions to access this page.</h3>
+            {% if is_granted('ROLE_USER') %}
+                <a class="btn btn-info text-center" href="{{ path('dashboard') }}">Back to Dashboard</a>
+            {% else %}
+                <a class="btn btn-info text-center" href="{{ path('home') }}">Back to Homepage</a>
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}
+
+{% block footer %}
+    <footer>
+        <div class="container">
+            <p class="text-center">Copyright (c)2017 <b>socialplus</b>. All rights reserved.</p>
+        </div>
+    </footer>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript" href="{{ asset('js/jquery-2.2.4.min.js') }}"></script>
+{% endblock %}

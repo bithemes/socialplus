@@ -1,0 +1,27 @@
+{% for post in posts %}
+    <li class="timeline-post">
+        <div class="media">
+            <div class="media-left">
+                <a href="#" class="post-avatar">
+                    {% if post.user.avatarName %}
+                        <img src="{{ vich_uploader_asset(post.user, 'avatarFile') }}" alt="{{ post.user.avatarName }}">
+                    {% else %}
+                        <img src="{{ asset('img/avatar.jpg') }}" alt="user avatar">
+                    {% endif %}
+                </a>
+            </div>
+            <div class="media-body">
+                <h4 class="caption-name">{{ post.user.name }} {{ post.user.surname }}</h4>
+                <p class="post-date">{{ post.uploadedAt|ago }} {% if post.editedAt %}· edited {{ post.editedAt|ago }}{% endif %}</p>
+            </div>
+        </div>
+        <div class="post-content">
+            <p>{{ post.content|nl2br }}</p>
+            {% if post.imageName %}
+                <a href="{{ vich_uploader_asset(post, 'imageFile') }}" class="post-img">
+                    <img src="{{ vich_uploader_asset(post, 'imageFile') }}" alt="{{ post.imageName }}">
+                </a>
+            {% endif %}
+        </div>
+    </li>
+{% endfor %}

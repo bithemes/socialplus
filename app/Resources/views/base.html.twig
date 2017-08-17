@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %} | Social.Plus</title>
+    {% block css %}
+        <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap-3.3.7-dist/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('vendor/magnific-popup/magnific-popup.css') }}">
+        <!--link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet"-->
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/styles.css') }}">
+    {% endblock %}
+    {% block styles %}
+
+    {% endblock %}
+</head>
+<body>
+{% block menu %}{% endblock %}
+<div class="main-container">
+    {% block body %}{% endblock %}
+    {% block footer %}
+        <footer>
+            <div class="container">
+                <p class="text-center">Copyright ©2017 <b>socialplus</b>. All rights reserved.</p>
+            </div>
+        </footer>
+    {% endblock %}
+</div>
+{% block js %}
+    <script type="text/javascript" src="{{ asset('js/jquery-2.2.4.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/bootstrap-3.3.7-dist/js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/jquery.ns-autogrow.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/jquery.mark.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/magnific-popup/jquery.magnific-popup.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script type="text/javascript" src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script type="text/javascript" src="{{ asset('js/scripts.js') }}"></script>
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}
+</body>
+</html>

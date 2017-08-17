@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}Timeline{% endtrans %}{% endblock %}
+
+{% block menu %}
+    {% include(':dashboard/parts:menu.html.twig') %}
+{% endblock %}
+
+{% block body %}
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="panel panel-default">
+                        <p>Total posts: <b class="timeline-total-posts">{{ total_posts }}</b></p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="panel panel-default posts">
+                        <ul>
+                            {% include ':dashboard/parts:timeline_posts.html.twig' %}
+                        </ul>
+                        {% if total_posts > website.postsPerPage %}
+                            <a class="btn btn-post show-timeline-posts" href="javascript:void(0)">Show next {{ website.postsPerPage }} posts</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    {% for note in user.notes %}
+                        <div class="alert alert-{{ note.type }} alert-dismissible" role="alert">
+                            <button type="button" class="close each-note" data-dismiss="alert" data-id="{{ note.id }}"><span>&times;</span></button>
+                            {{ note.message }}
+                        </div>
+                    {% endfor %}
+                    <div class="panel panel-default panel-likes">
+                        <h4 class="caption-name">{% trans %}You are following{% endtrans %}</h4>
+                        <ul>
+                            {% for follow in user.follows|slice(0,20) %}
+                                <li>
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="#" class="post-avatar">
+                                                {% if follow.targetUser.avatarName %}
+                                                    <img src="{{ vich_uploader_asset(follow.targetUser, 'avatarFile') }}" alt="{{ follow.targetUser.avatarName }}">
+                                                {% else %}
+                                                    <img src="{{ asset('img/avatar.jpg') }}" alt="follow avatar">
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <a class="follow-link" href="{{ path('user_page', { 'username': follow.targetUser.username }) }}"><strong>{{ follow.targetUser.name }} {{ follow.targetUser.surname }}</strong></a>
+                                            <a href="{{ path('unfollow', { 'username': follow.targetUser.username }) }}" class="btn btn-follow"><span class="glyphicon glyphicon glyphicon-check"></span> {% trans %}Unfollow{% endtrans %}</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% include(':dashboard/parts:copyright.html.twig') %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block styles %}
+    <style type="text/css">
+        .btn-follow, .panel-likes .btn-follow {
+            border-color: {{ website.mainColor }};
+            color: {{ website.mainColor }}
+        }
+        .btn-follow .glyphicon {
+            color: {{ website.mainColor }};
+        }
+        .btn-follow:hover {
+            background: {{ website.mainColor }};
+            color: #fff;
+        }
+        .btn-post {
+            background: {{ website.mainColor }}
+        }
+    </style>
+{% endblock %}

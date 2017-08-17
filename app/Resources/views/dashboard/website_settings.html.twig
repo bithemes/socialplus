@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}Website Settings{% endtrans %}{% endblock %}
+
+{% block menu %}
+    {% include(':dashboard/parts:menu.html.twig') %}
+{% endblock %}
+
+{% block body %}
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+
+                </div>
+
+                <div class="col-md-6">
+                    <div class="panel panel-default settings">
+                        <h3>{% trans %}Website Settings{% endtrans %}</h3><br>
+                        {{ form_start(form) }}
+                            {{ form_widget(form) }}
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    {% for note in user.notes %}
+                        <div class="alert alert-{{ note.type }} alert-dismissible" role="alert">
+                            <button type="button" class="close each-note" data-dismiss="alert" data-id="{{ note.id }}"><span>&times;</span></button>
+                            {{ note.message }}
+                        </div>
+                    {% endfor %}
+
+                    {% include(':dashboard/parts:copyright.html.twig') %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

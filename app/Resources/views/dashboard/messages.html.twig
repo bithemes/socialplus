@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% trans %}Messages{% endtrans %}{% endblock %}
+
+{% block menu %}
+    {% include(':dashboard/parts:menu.html.twig') %}
+{% endblock %}
+
+{% block body %}
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="panel panel-default panel-menu">
+                        <h4 class="caption-name text-center">Menu</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item"><a href="{{ path('messages') }}">{% trans %}Messages{% endtrans %}</a><span class="glyphicon glyphicon-menu-right"></span></li>
+                            <li class="list-group-item"><a href="{{ path('message_new') }}">{% trans %}New Message{% endtrans %}</a><span class="glyphicon glyphicon-menu-right"></span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="panel panel-default new-msg-input posts">
+                        <ul>
+                            {% for msg in pagination %}
+                                <li class="each-msg{% if not msg.checked %} msg-not-checked{% endif %}" data-id="{{ msg.id }}">
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="{{ path('user_page', { 'username': msg.fromUser.username }) }}" class="post-avatar">
+                                                {% if msg.fromUser.avatarName %}
+                                                    <img src="{{ vich_uploader_asset(msg.fromUser, 'avatarFile') }}" alt="{{ msg.fromUser.avatarName }}">
+                                                {% else %}
+                                                    <img src="{{ asset('img/avatar.jpg') }}" alt="user avatar">
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <h4 class="caption-name"><a href="{{ path('user_page', { 'username': msg.fromUser.username }) }}">{{ msg.fromUser.name }} {{ msg.fromUser.surname }}</a></h4>
+                                            <p class="post-date">{{ msg.sendAt|ago }} · <a href="{{ path('message_remove', { 'id': msg.id }) }}">{% trans %}Remove{% endtrans %}</a></p>
+                                        </div>
+                                    </div>
+                                    <div class="post-content">
+                                        <p class="msg-body">{{ msg.content|slice(0,40)|nl2br }}{% if msg.content|length > 40 %}...{% endif %}</p>
+                                        {% if msg.content|length > 40 %}<p class="msg-hidden">{{ msg.content|nl2br }}</p>{% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="navigation">
+                            {{ knp_pagination_render(pagination) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    {% for note in user.notes %}
+                        <div class="alert alert-{{ note.type }} alert-dismissible" role="alert">
+                            <button type="button" class="close each-note" data-dismiss="alert" data-id="{{ note.id }}"><span>&times;</span></button>
+                            {{ note.message }}
+                        </div>
+                    {% endfor %}
+                    <div class="panel panel-default panel-likes">
+                        <h4 class="caption-name">{% trans %}You are following{% endtrans %}</h4>
+                        <ul>
+                            {% for follow in user.follows|slice(0,20) %}
+                                <li>
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="#" class="post-avatar">
+                                                {% if follow.targetUser.avatarName %}
+                                                    <img src="{{ vich_uploader_asset(follow.targetUser, 'avatarFile') }}" alt="{{ follow.targetUser.avatarName }}">
+                                                {% else %}
+                                                    <img src="{{ asset('img/avatar.jpg') }}" alt="follow avatar">
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <a class="follow-link" href="{{ path('user_page', { 'username': follow.targetUser.username }) }}"><strong>{{ follow.targetUser.name }} {{ follow.targetUser.surname }}</strong></a>
+                                            <a href="{{ path('unfollow', { 'username': follow.targetUser.username }) }}" class="btn btn-follow"><span class="glyphicon glyphicon glyphicon-check"></span> {% trans %}Unfollow{% endtrans %}</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% include(':dashboard/parts:copyright.html.twig') %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block styles %}
+    <style type="text/css">
+        .btn-follow, .panel-likes .btn-follow {
+            border-color: {{ website.mainColor }};
+            color: {{ website.mainColor }}
+        }
+        .btn-follow .glyphicon {
+            color: {{ website.mainColor }};
+        }
+        .btn-follow:hover {
+            background: {{ website.mainColor }};
+            color: #fff;
+        }
+        .pagination>.active>a,
+        .pagination>.active>a:focus,
+        .pagination>.active>a:hover,
+        .pagination>.active>span, .pagination>.active>span:focus,
+        .pagination>.active>span:hover {
+            background-color: {{ website.mainColor }};
+            border-color: {{ website.mainColor }};
+        }
+        .pagination>li>a,
+        .pagination>li>span {
+            color: {{ website.mainColor }};
+        }
+    </style>
+{% endblock %}

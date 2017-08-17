@@ -1,0 +1,11 @@
+main:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+    options:
+        expose: true
+
+fos_js_routing:
+    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
+
+logout:
+    path: /logout

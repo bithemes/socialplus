@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+    <main>
+        <div class="container">
+            <h2 class="text-center">Welcome to {{ website.title|raw }}</h2>
+            <h3 class="text-center">{{ website.subtitle|raw }}</h3>
+            <div class="col-md-6">
+                <h3 class="text-center">Login</h3>
+                <br>
+                {% if login.error %}
+                    <div class="alert alert-danger">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        {{ login.error.messageKey|trans(login.error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+                <form action="{{ path('login') }}" method="post">
+                    <div class="form-group">
+                        <label class="control-label" for="username">Username</label>
+                        <input class="form-control" type="text" id="username" name="_username" {% if login %}value="{{ login.last_username }}"{% endif %}>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="password">Password</label>
+                        <input class="form-control" type="password" id="password" name="_password">
+                    </div>
+
+                    <input type="hidden" name="_target_path" value="{{ path('dashboard') }}">
+
+                    <button class="btn btn-success" type="submit">Login</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h3 class="text-center">Create a New Account</h3>
+                <br>
+                {{ form_start(register.form) }}
+                    {{ form_widget(register.form) }}
+                {{ form_end(register.form) }}
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block footer %}
+    <footer>
+        <div class="container">
+            <p class="text-center">Copyright (c)2017 <b>socialplus</b>. All rights reserved.</p>
+        </div>
+    </footer>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript" href="{{ asset('js/jquery-2.2.4.min.js') }}"></script>
+{% endblock %}

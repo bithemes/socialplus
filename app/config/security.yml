@@ -1,0 +1,30 @@
+security:
+    encoders:
+        AppBundle\Entity\User: bcrypt
+
+    providers:
+        db_users:
+          entity:
+            class: AppBundle:User
+            property: username
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            anonymous: ~
+            provider: db_users
+            form_login:
+                login_path: /login
+                check_path: /login
+
+            logout:
+                path: /logout
+                target: /
+
+    role_hierarchy:
+        ROLE_MODERATOR: ROLE_USER
+        ROLE_ADMIN: ROLE_MODERATOR
+        ROLE_SUPER_ADMIN: ROLE_ADMIN

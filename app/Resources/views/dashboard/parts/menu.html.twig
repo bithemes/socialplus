@@ -1,0 +1,47 @@
+<header>
+    <div class="navbar navbar-default navbar-fixed-top" style="background-color: {{ website.mainColor }}">
+        <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#web-nav">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{ path('dashboard') }}">
+                        <span class="logo-small">
+                            {% if website.brandName %}
+                                <img src="{{ vich_uploader_asset(website, 'brandFile') }}" alt="brand logo">
+                            {% else %}
+                                <img src="{{ asset('img/brand.png') }}" alt="socialplus logo"/>
+                            {% endif %}
+                        </span>
+                    </a>
+                </div>
+                {% set totalMessages = 0 %}
+                {% for msg in user.receivedMessages %}
+                    {% if not msg.checked %}
+                        {% set totalMessages = totalMessages + 1 %}
+                    {% endif %}
+                {% endfor %}
+                <div class="navbar-collapse collapse" id="web-nav">
+                    <ul class="nav navbar-nav navbar-left">
+                        <li><a href="{{ path('dashboard') }}">{% trans %}Home{% endtrans %}</a></li>
+                        <li><a href="{{ path('messages') }}">{% trans %}Messages{% endtrans %} <span class="badge" style="color: {{ website.mainColor }}">{{ totalMessages }}</span></a></li>
+                        <li><a href="{{ path('timeline') }}">{% trans %}Timeline{% endtrans %}</a></li>
+                        <li><a href="{{ path('settings') }}">{% trans %}Settings{% endtrans %}</a></li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li><a href="{{ path('website_settings') }}"><b>{% trans %}Website Settings{% endtrans %}</b></a></li>
+                        {% endif %}
+                        {% if is_granted('ROLE_MODERATOR') %}
+                            <li><a href="{{ path('reports') }}"><b>{% trans %}Reports{% endtrans %}</b></a></li>
+                        {% endif %}
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><input type="text" class="form-control search-nav" placeholder="{% trans %}Search{% endtrans %}"></li>
+                        <li><a href="{{ path('logout') }}">{% trans %}Logout{% endtrans %}</a></li>
+                    </ul>
+                </div> <!-- End of navbar-collapse -->
+        </div> <!-- End of container-fluid -->
+    </div> <!-- End of main-nav -->
+</header>
